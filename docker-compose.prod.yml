@@ -7,7 +7,7 @@ services:
       - MYSQL_DATABASE=leadpilot
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-root}
     ports:
-      - "3307:3306"
+      - "127.0.0.1:1703:3306"
     volumes:
       - db_data_prod:/var/lib/mysql
     healthcheck:
@@ -21,7 +21,7 @@ services:
     container_name: leadpilot_redis_prod
     restart: always
     ports:
-      - "6379:6379"
+      - "127.0.0.1:1704:6379"
 
   backend:
     build:
@@ -31,7 +31,7 @@ services:
     restart: always
     command: uvicorn main:app --host 0.0.0.0 --port 8000
     ports:
-      - "8000:8000"
+      - "127.0.0.1:1702:8000"
     environment:
       - DATABASE_URL=mysql+pymysql://root:${DB_PASSWORD:-root}@db/leadpilot
       - REDIS_URL=redis://redis:6379/0
@@ -66,7 +66,7 @@ services:
     container_name: leadpilot_frontend_prod
     restart: always
     ports:
-      - "3000:3000"
+      - "1701:3000"
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     depends_on:

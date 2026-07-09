@@ -36,6 +36,19 @@ class MapsScraper:
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
                 record_video_dir="/app/recordings/"
             )
+            # Inject SOCS cookie to bypass Google Consent page
+            try:
+                await context.add_cookies([
+                    {
+                        "name": "SOCS",
+                        "value": "CAISHAgBEhJnd3NfMjAyNDA2MjEtMF8SQzEaBmVuIAEaBgiAsd-yBq",
+                        "domain": ".google.com",
+                        "path": "/",
+                    }
+                ])
+            except Exception as e:
+                logger.warning(f"Failed to add consent cookie: {e}")
+
             page = await context.new_page()
 
             encoded_query = urllib.parse.quote_plus(query)
@@ -51,7 +64,22 @@ class MapsScraper:
             
             # Handle Consent Page
             try:
-                consent_selectors = ['button[aria-label="Accept all"]', 'button:has-text("Accept all")', 'button:has-text("I agree")']
+                consent_selectors = [
+                    'button[aria-label="Accept all"]',
+                    'button:has-text("Accept all")',
+                    'button:has-text("I agree")',
+                    'button:has-text("Alle akzeptieren")',
+                    'button:has-text("Ich stimme zu")',
+                    'button:has-text("Tout accepter")',
+                    'button:has-text("Aceptar todo")',
+                    'button:has-text("Aceptar todas")',
+                    'button:has-text("Accetta tutto")',
+                    'button:has-text("Alles accepteren")',
+                    'button:has-text("Zaakceptuj wszystko")',
+                    'button:has-text("Zgadzam się")',
+                    'button:has-text("Aceitar tudo")',
+                    'button:has-text("Принять всё")'
+                ]
                 for selector in consent_selectors:
                     btn = page.locator(selector)
                     if await btn.count() > 0 and await btn.first.is_visible():

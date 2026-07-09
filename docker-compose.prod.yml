@@ -31,7 +31,7 @@ services:
     restart: always
     command: uvicorn main:app --host 0.0.0.0 --port 8000
     ports:
-      - "127.0.0.1:1702:8000"
+      - "1702:8000"
     environment:
       - DATABASE_URL=mysql+pymysql://root:${DB_PASSWORD:-root}@db/leadpilot
       - REDIS_URL=redis://redis:6379/0

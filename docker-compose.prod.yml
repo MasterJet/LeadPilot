@@ -11,7 +11,7 @@ services:
     volumes:
       - db_data_prod:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -35,6 +35,7 @@ services:
     environment:
       - DATABASE_URL=mysql+pymysql://root:${DB_PASSWORD:-root}@db/leadpilot
       - REDIS_URL=redis://redis:6379/0
+    shm_size: '2gb'
     depends_on:
       db:
         condition: service_healthy
@@ -51,6 +52,7 @@ services:
     environment:
       - DATABASE_URL=mysql+pymysql://root:${DB_PASSWORD:-root}@db/leadpilot
       - REDIS_URL=redis://redis:6379/0
+    shm_size: '2gb'
     depends_on:
       db:
         condition: service_healthy

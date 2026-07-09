@@ -65,6 +65,17 @@ class MapsScraper:
                 await page.wait_for_selector('div[role="feed"], a.hfpxzc, h1.DUwDvf', timeout=20000)
             except Exception as e:
                 logger.warning(f"Results not found: {e}")
+                logger.warning(f"Current page URL: {page.url}")
+                try:
+                    logger.warning(f"Current page Title: {await page.title()}")
+                    import os
+                    screenshot_dir = "/app/recordings"
+                    os.makedirs(screenshot_dir, exist_ok=True)
+                    screenshot_path = os.path.join(screenshot_dir, "debug_no_results.png")
+                    await page.screenshot(path=screenshot_path)
+                    logger.warning(f"Saved debug screenshot to {screenshot_path}")
+                except Exception as ex:
+                    logger.error(f"Failed to save debug info: {ex}")
                 await browser.close()
                 return leads
 

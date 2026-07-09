@@ -29,12 +29,11 @@ Create a `.env` file at the root of the project on the production server (`/home
 DB_PASSWORD=your_secure_production_password_here
 
 # 2. Next.js API Endpoint (Accessible from the user's web browser)
-# Replace with your actual server IP or Domain Name!
-NEXT_PUBLIC_API_URL=https://api.yourdomain.com/api/v1
+NEXT_PUBLIC_API_URL=https://backend.leadpilot.asdev.tech/api/v1
 ```
 
 > [!IMPORTANT]
-> Since `NEXT_PUBLIC_API_URL` is used client-side (in the browser), it **must** be a URL that the client's browser can resolve. If you don't have a domain name yet, use the server's public IP address pointing to the backend API port (e.g., `http://192.168.1.100:1702/api/v1`).
+> Since `NEXT_PUBLIC_API_URL` is used client-side (in the browser), it **must** be a URL that the client's browser can resolve. For your deployment, this is `https://backend.leadpilot.asdev.tech/api/v1`.
 
 ---
 
@@ -49,12 +48,12 @@ Exposing raw container ports directly to the public internet is a security hazar
 #### Example Caddy Configuration (`Caddyfile`):
 ```caddy
 # Frontend Server
-yourdomain.com {
+leadpilot.asdev.tech {
     reverse_proxy localhost:1701
 }
 
 # Backend API
-api.yourdomain.com {
+backend.leadpilot.asdev.tech {
     reverse_proxy localhost:1702
 }
 ```

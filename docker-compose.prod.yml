@@ -1,0 +1,76 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: leadpilot_db_prod
+    restart: always
+    environment:
+      - MYSQL_DATABASE=leadpilot
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-root}
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data_prod:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:alpine
+    container_name: leadpilot_redis_prod
+    restart: always
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: leadpilot_backend_prod
+    restart: always
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:${DB_PASSWORD:-root}@db/leadpilot
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: leadpilot_worker_prod
+    restart: always
+    command: celery -A core.worker.celery worker --loglevel=info -Q scraper,analyzer,celery
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:${DB_PASSWORD:-root}@db/leadpilot
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    container_name: leadpilot_frontend_prod
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    depends_on:
+      - backend
+
+volumes:
+  db_data_prod:

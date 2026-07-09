@@ -1,0 +1,3 @@
+CITY=London BUSINESS=Salon  MAX_RESULTS=100 ENABLE_VIDEO=false HEADLESS=false uv run python main.py
+
+in .env

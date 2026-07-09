@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  maps-scraper:
+    build: .
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
+    # To support video recording and potential headless issues in Docker
+    shm_size: '2gb'

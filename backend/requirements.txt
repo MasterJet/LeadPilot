@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+sqlalchemy
+pymysql
+alembic
+celery
+redis
+python-dotenv
+playwright
+openai
+pydantic-settings
+cryptography
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+google-generativeai
